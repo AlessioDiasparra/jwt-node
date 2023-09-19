@@ -7,7 +7,7 @@ const auth = Router();
 // Login route.
 auth.post('/login', asyncHandler(AuthController.login));
 
-// Change my password.
+// cambia password.
 auth.post(
   '/change-password',
   [checkJwt],

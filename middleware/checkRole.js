@@ -2,7 +2,7 @@ import { getUser } from '../state/users.js';
 
 export const checkRole = (roles) => {
   return async (req, res, next) => {
-    // Find the user within the database.
+    // Trova l'utente nel database.
     const user = getUser(req.token.payload.userId);
 
     if (!user) {

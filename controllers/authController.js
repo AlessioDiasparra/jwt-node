@@ -10,21 +10,21 @@ import {
 } from '../state/users.js';
 
 class AuthController {
+  //login
   static login = async (req, res, next) => {
-    // Ensure the username and password are provided.
-    // Throw an exception back to the client if those values are missing.
-    //!TypeError: Cannot destructure property &#39;username&#39; 
+    // Assicurarsi che vengano forniti il nome utente e la password.
+    // Lancia un'eccezione al client se questi valori sono mancanti.
     let { username, password } = req?.body;
     if (!(username && password))
       throw new ClientError('Username and password are required');
 
     const user = getUserByUsername(username);
 
-    // Check if the provided password matches our encrypted password.
+    // Verificare se la password fornita corrisponde alla nostra password crittografata.
     /* if (!user || !(await isPasswordCorrect(user.id, password)))
       throw new UnauthorizedError("Username and password don't match"); */
 
-    // Generate and sign a JWT that is valid for one hour.
+    // Generare e firmare un JWT valido per un'ora..
     const token = sign(
       { userId: user.id, username: user.username, role: user.role },
       config.jwt.secret,
@@ -37,26 +37,27 @@ class AuthController {
       }
     );
 
-    // Return the JWT in our response.
+    // Restituire il JWT nella risposta.
     res.send({ token: token });
   };
 
+  //cambia password
   static changePassword = async (req, res, next) => {
-    // Retrieve the user ID from the incoming JWT.
+    // Recuperare l'ID utente dal JWT in arrivo.
     const id = req.token.payload.userId;
 
-    // Get the provided parameters from the request body.
+    // fornire i parametri dal body della request.
     const { oldPassword, newPassword } = req.body;
     if (!(oldPassword && newPassword))
       throw new ClientError("Passwords don't match");
 
-    // Check if old password matches our currently stored password, then we proceed.
-    // Throw an error back to the client if the old password is mismatched.
+    // Verificare se la vecchia password corrisponde a quella attualmente memorizzata, quindi procedere.
+    // Lancia un errore al client se la vecchia password non è corrispondente.
     if (!(await isPasswordCorrect(id, oldPassword)))
       throw new UnauthorizedError("Old password doesn't match");
 
-    // Update the user password.
-    // Note: We will not hit this code if the old password compare failed.
+    // Aggiorna la password dell'utente.
+    // Nota: questo codice non verrà utilizzato se il confronto con la vecchia password non è andato a buon fine.
     await changePassword(id, newPassword);
 
     res.status(204).send();

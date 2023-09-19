@@ -11,17 +11,17 @@ import {
 
 class UserController {
   static listAll = async (req, res, next) => {
-    // Retrieve all users.
+    // recupera tutti gli users.
     const users = getAllUsers();
-    // Return the user information.
+    // ritorna info users.
     res.json({users: users});
   };
 
   static getOneById = async (req, res, next) => {
-    // Get the ID from the URL.
+    // Get  ID da  URL.
     const id = req.params.id;
 
-    // Validate permissions.
+    // Valida permessi.
     if (
       req.token.payload.role === Roles.USER &&
       req.params.id !== req.token.payload.userId
@@ -29,30 +29,30 @@ class UserController {
       throw new ForbiddenError('Not enough permissions');
     }
 
-    // Get the user with the requested ID.
+    // Get user con id.
     const user = getUser(id);
 
-    // NOTE: We will only get here if we found a user with the requested ID.
+    // NOTA: Si arriva a questo punto solo se si è trovato un utente con l'ID richiesto.
     res.json({user: user});
   };
 
   static newUser = async (req, res, next) => {
-    // Get the user name and password.
+    // Get  user name e password.
     let { username, password } = req.body;
-    // We can only create regular users through this function.
+    // Possiamo creare utenti regolari solo attraverso questa funzione.
     const user = await createUser(username, password, Roles.USER);
 
-    // NOTE: We will only get here if all new user information
-    // is valid and the user was created.
-    // Send an HTTP "Created" response.
+    // NOTA: si arriverà a questo punto solo se tutte le informazioni dei nuovi utenti
+    // è valido e l'utente è stato creato.
+    // Send HTTP "Created" response.
     res.status(201).type('json').send(user);
   };
 
   static editUser = async (req, res, next) => {
-    // Get the user ID.
+    // Get user ID.
     const id = req.params.id;
 
-    // Validate permissions.
+    // Valida permessi.
     if (
       req.token.payload.role === Roles.USER &&
       req.params.id !== req.token.payload.userId
@@ -60,18 +60,18 @@ class UserController {
       throw new ForbiddenError('Not enough permissions');
     }
 
-    // Get values from the body.
+    // Get valori dal body.
     const { username, role } = req.body;
 
-    // Verify you cannot make yourself an ADMIN if you are a USER.
+    // Verificare che non si può diventare ADMIN se si è UTENTE.
     if (req.token.payload.role === Roles.USER && role === Roles.ADMIN) {
       throw new ForbiddenError('Not enough permissions');
     }
-    // Verify the role is correct.
+    // Verificare che il ruolo sia corretto.
     else if (!Object.values(Roles).includes(role))
       throw new ClientError('Invalid role');
 
-    // Retrieve and update the user record.
+    // Recuperare e aggiornare il record dell'utente.
     const user = getUser(id);
     const updatedUser = updateUser(
       id,
@@ -79,21 +79,21 @@ class UserController {
       role || user.role
     );
 
-    // NOTE: We will only get here if all new user information
-    // is valid and the user was updated.
-    // Send an HTTP "No Content" response.
+    // NOTA: Si arriva a questo punto solo se tutte le informazioni del nuovo utente
+    // sono valide e l'utente è stato aggiornato.
+    // Inviare una risposta HTTP "No Content".
     res.status(204).type('json').send(updatedUser);
   };
 
   static deleteUser = async (req, res, next) => {
-    // Get the ID from the URL.
+    // Get  ID da URL.
     const id = req.params.id;
 
     deleteUser(id);
 
-    // NOTE: We will only get here if we found a user with the requested ID and
-    // deleted it.
-    // Send an HTTP "No Content" response.
+    // NOTA: Si arriva qui solo se si è trovato un utente con l'ID richiesto e lo si è cancellato.
+    // cancellato.
+    // Inviare una risposta HTTP "No Content".
     res.status(204).type('json').send();
   };
 }
