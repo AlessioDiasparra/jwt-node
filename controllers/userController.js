@@ -1,5 +1,5 @@
 import { ForbiddenError } from '../exceptions/forbiddenError.js';
-import { ClientError } from '../exceptions/clientError';
+import { ClientError } from '../exceptions/clientError.js';
 import {
   getAllUsers,
   Roles,
@@ -7,14 +7,14 @@ import {
   createUser,
   updateUser,
   deleteUser,
-} from '../state/users';
+} from '../state/users.js';
 
 class UserController {
   static listAll = async (req, res, next) => {
     // Retrieve all users.
     const users = getAllUsers();
     // Return the user information.
-    res.status(200).type('json').send(users);
+    res.json({users: users});
   };
 
   static getOneById = async (req, res, next) => {
@@ -33,7 +33,7 @@ class UserController {
     const user = getUser(id);
 
     // NOTE: We will only get here if we found a user with the requested ID.
-    res.status(200).type('json').send(user);
+    res.json({user: user});
   };
 
   static newUser = async (req, res, next) => {

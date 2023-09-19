@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import UserController from '../controllers/userController';
+import UserController from '../controllers/userController.js';
 import { Roles } from '../state/users.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { checkJwt } from '../middleware/checkJwt.js';

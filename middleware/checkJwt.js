@@ -1,15 +1,16 @@
-import {verify} from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+const {verify} = jwt;
 import config from '../config/config.js';
 
 // The CustomRequest interface allows providing JWTs to our controllers.
 export const checkJwt = (req, res, next) => {
   // Get the jwt token from the head.
-  const token = req.headers['authorization'];
+  const token = req.headers.authorization?.split(' ')[1]
   let jwtPayload;
 
   // Try to validate the token and get data.
   try {
-    jwtPayload = verify(token?.split(' ')[1], config.jwt.secret, {
+    jwtPayload = verify(token, config.jwt.secret, {
       complete: true,
       audience: config.jwt.audience,
       issuer: config.jwt.issuer,
